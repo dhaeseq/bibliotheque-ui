@@ -1,0 +1,18 @@
+---
+
+# RESET CONNECTION FOR PIPELINING
+- name: reset ssh connection
+  meta: reset_connection
+  tags:
+    - loginDockerhub
+    - freshInstallDocker
+
+# LOG IN DOCKERHUB
+- name: log into docker hub registry
+  docker_login:
+    username: "{{ dockerhub_username }}"
+    password: "{{ dockerhub_password }}"
+    reauthorize: yes
+  tags:
+    - loginDockerhub
+    - freshInstallDocker

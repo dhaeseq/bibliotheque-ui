@@ -1,0 +1,12 @@
+---
+
+- hosts: local
+  roles:
+    - { role: docker }
+    - { role: bibliothequeapplication }
+
+
+- hosts: filrougeservers
+  roles:
+    - { role: docker }
+    - { role: bibliothequeapplication }

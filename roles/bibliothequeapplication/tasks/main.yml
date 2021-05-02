@@ -1,0 +1,88 @@
+---
+
+# BUILD PREPROD UI IMAGE FROM NEXUS AND PUSH DOCKERHUB
+- name: Build preprod ui image from nexus and send it to DockerHub
+  docker_image:
+    build:
+      path: "{{ role_path }}/files/ui"
+      args:
+        nexus_server: "{{ nexus_host }}"
+        version: maven-snapshots
+        env: preprod
+    state: present
+    source: build
+    name: dhaeseq/projet-fil-rouge-groupe2:bibliotheque-ui-preprod
+    tag: latest
+    push: yes
+  when: inventory_hostname == "localhost"
+  tags:
+    - buildAndPushPreprodUiNexusImage
+
+# REMOVE PREPROD LOCAL IMAGE
+- name: Remove preprod ui local image
+  docker_image:
+    state: absent
+    name:  dhaeseq/projet-fil-rouge-groupe2
+    tag: bibliotheque-ui-preprod
+    force_absent: yes
+  when: inventory_hostname != "prodfilrouge"
+  tags:
+    - buildAndPushPreprodUiNexusImage
+    - removePreprodLocalUiImage
+
+# BUILD PROD UI IMAGE FROM NEXUS AND PUSH DOCKERHUB
+- name: Build prod ui image from nexus and send it to DockerHub
+  docker_image:
+    build:
+      path: "{{ role_path }}/files/ui"
+      args:
+        nexus_server: "{{ nexus_host }}"
+        version: maven-releases
+        env: prod
+    state: present
+    source: build
+    name: dhaeseq/projet-fil-rouge-groupe2:bibliotheque-ui-prod
+    tag: latest
+    push: yes
+  when: inventory_hostname == "localhost"
+  tags:
+    - buildAndPushProdUiNexusImage
+
+# REMOVE PROD LOCAL IMAGE
+- name: Remove prod ui local image
+  docker_image:
+    state: absent
+    name:  dhaeseq/projet-fil-rouge-groupe2
+    tag: bibliotheque-ui-prod
+    force_absent: yes
+  when: inventory_hostname != "devfilrouge"
+  tags:
+    - buildAndPushProdUiNexusImage
+    - removeProdLocalUiImage
+
+# RUN UI IMAGE
+- name: Run ui image
+  docker_container:
+    detach: yes
+    image: dhaeseq/projet-fil-rouge-groupe2:bibliotheque-ui-{{ env }}
+    pull: yes
+    recreate: yes
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt
+    name: bibliotheque-ui
+    published_ports:
+      - 80:80
+      - 443:443
+    restart_policy: always
+  when: inventory_hostname in groups.filrougeservers
+  tags:
+    - runUiImage
+    - freshInstallApplication
+
+# PRUNE IMAGES
+- name: Prune docker images
+  docker_prune:
+    images: yes
+  tags:
+    - pruneImages
+    - freshInstallApplication

@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+
+  # Front-end Angular application
+  bibliotheque-ui:
+
+    build:
+      context: ./
+      args:
+        angular_build_env: node_modules/.bin/ng build
+        env: local
+    restart: always
+    container_name: bibliotheque-ui-local
+    ports:
+      - 80:80
+
+volumes:
+  bibliotheque-data:
