@@ -115,8 +115,11 @@ export class ReservationsComponent implements OnInit {
         .subscribe();
   }
 
-  applyFilter() {
-    this.reservations = this.reservationService.getReservationsWithFilter(this.paginator.pageIndex, this.paginator.pageSize, this.selectedValue, this.filterValue)
+  applyFilter(): any {
+    this.reservations = this.reservationService.getReservationsWithFilter(this.paginator.pageIndex,
+                                                                          this.paginator.pageSize,
+                                                                          this.selectedValue,
+                                                                          this.filterValue)
         .pipe(map(data => {
                            this.isLoadingResults = false;
                            this.resultsLength = data.totalItems;

@@ -133,8 +133,11 @@ export class LivresComponent implements OnInit {
         });
   }
 
-  applyFilter() {
-    this.livres = this.livreService.getLivresWithFilter(this.paginator.pageIndex, this.paginator.pageSize, this.selectedValue, this.filterValue)
+  applyFilter(): any {
+    this.livres = this.livreService.getLivresWithFilter(this.paginator.pageIndex,
+                                                        this.paginator.pageSize,
+                                                        this.selectedValue,
+                                                        this.filterValue)
         .pipe(map(data => {
                            this.isLoadingResults = false;
                            this.resultsLength = data.totalItems;
